@@ -17,3 +17,18 @@ func TestDefaultBloomSetAndExist(t *testing.T) {
 		}
 	}
 }
+
+func TestDefaultBloomSetAndLen(t *testing.T) {
+	b := Default(30, 3)
+
+	keys := []string{"hello", "hello", "hello", "world", "world", "foo", "bar", "baz"}
+	sets := make(map[string]struct{})
+	for _, key := range keys {
+		b.Set(key)
+		sets[key] = struct{}{}
+	}
+
+	if len(sets) != b.Len() {
+		t.Errorf("len should be %d, but got %d", len(sets), b.Len())
+	}
+}

@@ -36,11 +36,17 @@ func NewBloom(bitmapLen, hashFuncLen int, h Hasher) *Bloom {
 }
 
 func (b *Bloom) Set(key string) {
-	b.n++
+	isNew := false
 	for _, offset := range b.getHashs(key) {
 		index := offset / b.arch
 		bitOffset := offset % b.arch
+		if b.bitmap[index]&(1<<bitOffset) == 0 {
+			isNew = true
+		}
 		b.bitmap[index] |= (1 << bitOffset)
+	}
+	if isNew {
+		b.n++
 	}
 }
 
@@ -55,6 +61,10 @@ func (b *Bloom) Exist(key string) bool {
 	}
 
 	return true
+}
+
+func (b *Bloom) Len() int {
+	return b.n
 }
 
 func (b *Bloom) getHashs(val string) []int {
